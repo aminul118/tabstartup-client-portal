@@ -1,0 +1,31 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import baseApi from '@/redux/baseApi';
+
+const investorProfileApi = baseApi.injectEndpoints({
+  // Create profile in investor
+  endpoints: (build) => ({
+    createInvestorProfile: build.mutation({
+      query: (data) => {
+        return {
+          url: `/investor-profile/create`,
+          method: 'POST',
+          body: data, // 'body' should be used instead of 'data' for the payload in RTK Query
+        };
+      },
+      invalidatesTags: ['INVESTOR'],
+    }),
+
+    // Get all investor
+    getAllInvestorProfile: build.query({
+      query: (arg: Record<string, any>) => ({
+        url: '/investor-profile/get-all',
+        method: 'GET',
+        params: arg,
+      }),
+      providesTags: ['INVESTOR'],
+    }),
+  }),
+});
+
+export const { useCreateInvestorProfileMutation, useGetAllInvestorProfileQuery } =
+  investorProfileApi;
