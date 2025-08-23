@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
-
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -16,6 +16,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import GradientTitle from '@/components/ui/gradientTitle';
+import { toast } from 'sonner';
+import { useCreateInvestorProfileMutation } from '@/redux/features/investor-profile/investorProfile.api';
+import { useUserInfoQuery } from '@/redux/features/auth/auth.api';
+import { Link } from 'react-router';
 
 const formSchema = z.object({
   investmentExperience: z.string().min(5, { message: 'Experience is required.' }),
@@ -40,6 +44,9 @@ const industries = [
 ];
 
 const InvestorProfileForm = () => {
+  const [createInvestorProfile] = useCreateInvestorProfileMutation();
+  const { data, isLoading } = useUserInfoQuery(undefined);
+
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -52,8 +59,36 @@ const InvestorProfileForm = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+  if (isLoading) {
+    return <p>Loading..</p>;
+  }
+  const userId = data?.data?._id;
+
+  if (!userId) {
+    return <p>Userid</p>;
+  }
+
+  console.log(userId);
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (!userId) {
+      toast.error('User ID not found. Please log in again.');
+      return;
+    }
+
+    const toastId = toast.loading('Submitting investment profile...');
+    const payload = { ...values, userId };
+    console.log(payload);
+
+    try {
+      const res = await createInvestorProfile(payload).unwrap();
+      console.log('Profile created:', res);
+      toast.success('Profile created successfully!', { id: toastId });
+    } catch (error: any) {
+      console.error(error);
+
+      toast.error(error?.data?.message || 'Something went wrong', { id: toastId });
+    }
   };
 
   return (
@@ -62,7 +97,6 @@ const InvestorProfileForm = () => {
         <GradientTitle title=" Complete Your Investment Profile" />
       </CardHeader>
       <CardContent>
-        {' '}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
@@ -177,9 +211,11 @@ const InvestorProfileForm = () => {
 
             <div className="flex justify-between">
               <Button type="submit">Submit</Button>
-              <Button variant="secondary" type="button">
-                Skip
-              </Button>
+              <Link to="/">
+                <Button variant="secondary" type="button">
+                  Skip
+                </Button>
+              </Link>
             </div>
           </form>
         </Form>

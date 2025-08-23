@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import loginImage from './../../../assets/images/invest.jpg';
-import { Link, useNavigate } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -30,6 +30,8 @@ const formSchema = z.object({
 const LoginForm = ({ className, ...props }: React.ComponentProps<'div'>) => {
   const navigate = useNavigate();
   const [login] = useLoginMutation(undefined);
+  const location = useLocation();
+  const from = location.state?.from || '/';
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -40,17 +42,23 @@ const LoginForm = ({ className, ...props }: React.ComponentProps<'div'>) => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log('Login Payload:', values);
     const toastId = toast.loading('User login processing..');
     try {
-      const { res } = await login(values).unwrap();
+      const res = await login(values).unwrap();
       toast.success(res.message || 'Login Successfully', { id: toastId });
+
+      const profile = res?.data?.user?.investor_profile || res?.data?.user?.entrepreneur_profile;
+
+      if (!profile) {
+        navigate('/company-profile', { replace: true });
+      } else {
+        navigate(from, { replace: true });
+      }
     } catch (error: any) {
-      if (error.data.message === "Error: User isn't verified") {
+      if (error?.data?.message === "Error: User isn't verified") {
         navigate('/verify', { state: values.email });
       }
-      console.log(error);
-      toast.error(error.data.message || 'Something Went Wrong', { id: toastId });
+      toast.error(error?.data?.message || 'Something Went Wrong', { id: toastId });
     }
   };
 

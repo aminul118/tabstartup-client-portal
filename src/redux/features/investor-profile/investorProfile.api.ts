@@ -5,14 +5,22 @@ const investorProfileApi = baseApi.injectEndpoints({
   // Create profile in investor
   endpoints: (build) => ({
     createInvestorProfile: build.mutation({
-      query: (data) => {
-        return {
-          url: `/investor-profile/create`,
-          method: 'POST',
-          body: data, // 'body' should be used instead of 'data' for the payload in RTK Query
-        };
-      },
+      query: (payload) => ({
+        url: '/investor-profile/create',
+        method: 'POST',
+        data: payload,
+      }),
       invalidatesTags: ['INVESTOR'],
+    }),
+
+    // Entrepreneur profile Create
+    createEntrepreneurProfile: build.mutation({
+      query: (payload) => ({
+        url: '/entrepreneur-profile/create',
+        method: 'POST',
+        data: payload,
+      }),
+      invalidatesTags: ['ENTREPRENEUR'],
     }),
 
     // Get all investor

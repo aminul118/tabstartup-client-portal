@@ -20,7 +20,7 @@ export const authApi = baseApi.injectEndpoints({
       }),
     }),
 
-    // POST - Login
+    // POST - Logout
     logout: builder.mutation({
       query: () => ({
         url: '/auth/logout',
@@ -47,7 +47,7 @@ export const authApi = baseApi.injectEndpoints({
       }),
     }),
 
-    // POST - Verify  OTP
+    // Get logged user info
     userInfo: builder.query({
       query: () => ({
         url: '/user/me',

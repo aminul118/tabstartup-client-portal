@@ -1,5 +1,6 @@
 import Layout from '@/components/layouts/Layout';
 import Login from '@/pages/auth/Login';
+import Profile from '@/pages/auth/Profile';
 import Register from '@/pages/auth/Register';
 import Unauthorized from '@/pages/auth/Unauthorized';
 import Verify from '@/pages/auth/Verify';
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
       {
         path: 'setting',
         Component: Setting,
+      },
+      {
+        path: 'profile',
+        Component: Profile,
       },
     ],
   },

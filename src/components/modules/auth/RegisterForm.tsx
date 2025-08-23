@@ -20,7 +20,7 @@ import Password from '@/components/ui/password';
 import { toast } from 'sonner';
 import { useRegisterMutation } from '@/redux/features/auth/auth.api';
 import type { IResponse } from '@/types';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import Logo from '@/components/layouts/Logo';
 
 // ✅ Zod schema for validation including confirm password
@@ -63,6 +63,7 @@ export interface Auth {
 
 const RegisterForm = ({ className, ...props }: React.ComponentProps<'div'>) => {
   const [register] = useRegisterMutation(undefined);
+  const navigate = useNavigate();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -89,6 +90,7 @@ const RegisterForm = ({ className, ...props }: React.ComponentProps<'div'>) => {
     try {
       const res: IResponse<IUser> = await register(payload).unwrap();
       toast.success(res.message || `${values.role} created successfully`, { id: toastId });
+      navigate('/login');
     } catch (error: any) {
       toast.error(error.message || 'Failed to Register', { id: toastId });
     }
