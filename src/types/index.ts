@@ -1,3 +1,6 @@
+import type { LucideIcon } from 'lucide-react';
+import type { ComponentType } from 'react';
+
 export type { Children } from './react';
 export type { TRole, IUser } from './auth.type';
 
@@ -8,3 +11,9 @@ export interface IResponse<T> {
   data: T;
 }
 
+export interface INavMenu {
+  title: string;
+  url: string;
+  icon: LucideIcon;
+  items: { title: string; url: string; Component: ComponentType }[];
+}

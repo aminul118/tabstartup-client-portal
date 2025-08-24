@@ -1,4 +1,5 @@
 import Layout from '@/components/layouts/Layout';
+import { role } from '@/constants/role';
 import Login from '@/pages/auth/Login';
 import Profile from '@/pages/auth/Profile';
 import Register from '@/pages/auth/Register';
@@ -9,12 +10,14 @@ import Home from '@/pages/Home';
 import MyInvestment from '@/pages/MyInvestment';
 import Projects from '@/pages/Projects';
 import Setting from '@/pages/Setting';
+import type { TRole } from '@/types';
+import withAuth from '@/utils/withAuth';
 import { createBrowserRouter } from 'react-router';
 
 const router = createBrowserRouter([
   {
     path: '',
-    Component: Layout,
+    Component: withAuth(Layout, (role.entrepreneur as TRole) || (role.investor as TRole)),
     children: [
       {
         index: true,

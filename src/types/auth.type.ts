@@ -1,4 +1,4 @@
-export type TRole = 'SUPER_ADMIN' | 'ADMIN' | 'USER';
+export type TRole = 'entrepreneur' | 'investor' | 'super_admin';
 
 export interface IUser {
   _id: string;
