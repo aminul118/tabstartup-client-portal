@@ -9,6 +9,7 @@ export const authApi = baseApi.injectEndpoints({
         method: 'POST',
         data: userInfo,
       }),
+      invalidatesTags: ['USER'],
     }),
 
     // POST - Login
@@ -18,6 +19,7 @@ export const authApi = baseApi.injectEndpoints({
         method: 'POST',
         data: authInfo,
       }),
+      invalidatesTags: ['USER'],
     }),
 
     // POST - Logout
@@ -36,6 +38,7 @@ export const authApi = baseApi.injectEndpoints({
         method: 'POST',
         data: otpInfo,
       }),
+      invalidatesTags: ['USER'],
     }),
 
     // POST - Verify  OTP
@@ -45,12 +48,21 @@ export const authApi = baseApi.injectEndpoints({
         method: 'POST',
         data: otpInfo,
       }),
+      invalidatesTags: ['USER'],
     }),
 
     // Get logged user info
     userInfo: builder.query({
       query: () => ({
         url: '/user/me',
+        method: 'GET',
+        providesTags: ['USER'],
+      }),
+    }),
+    // Get logged user info
+    userCompanyInfo: builder.query({
+      query: () => ({
+        url: '/user/company-profile',
         method: 'GET',
         providesTags: ['USER'],
       }),
@@ -65,4 +77,5 @@ export const {
   useVerifyOtpMutation,
   useLogoutMutation,
   useUserInfoQuery,
+  useUserCompanyInfoQuery,
 } = authApi;

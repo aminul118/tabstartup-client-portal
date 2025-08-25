@@ -1,5 +1,5 @@
 import Layout from '@/components/layouts/Layout';
-import { role } from '@/constants/role';
+import ShowCompanyProfile from '@/components/modules/companyProfile/ShowCompanyProfile';
 import Login from '@/pages/auth/Login';
 import Profile from '@/pages/auth/Profile';
 import Register from '@/pages/auth/Register';
@@ -10,14 +10,13 @@ import Home from '@/pages/Home';
 import MyInvestment from '@/pages/MyInvestment';
 import Projects from '@/pages/Projects';
 import Setting from '@/pages/Setting';
-import type { TRole } from '@/types';
-import withAuth from '@/utils/withAuth';
 import { createBrowserRouter } from 'react-router';
 
 const router = createBrowserRouter([
   {
     path: '',
-    Component: withAuth(Layout, (role.entrepreneur as TRole) || (role.investor as TRole)),
+    // Component: withAuth(Layout, (role.investor as TRole) || (role.entrepreneur as TRole)),
+    Component: Layout,
     children: [
       {
         index: true,
@@ -38,6 +37,10 @@ const router = createBrowserRouter([
       {
         path: 'profile',
         Component: Profile,
+      },
+      {
+        path: 'my-company-profile',
+        Component: ShowCompanyProfile,
       },
     ],
   },

@@ -18,8 +18,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import GradientTitle from '@/components/ui/gradientTitle';
 import { toast } from 'sonner';
 import { useCreateInvestorProfileMutation } from '@/redux/features/investor-profile/investorProfile.api';
-import { useUserInfoQuery } from '@/redux/features/auth/auth.api';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 
 const formSchema = z.object({
   investmentExperience: z.string().min(5, { message: 'Experience is required.' }),
@@ -45,7 +44,8 @@ const industries = [
 
 const InvestorProfileForm = () => {
   const [createInvestorProfile] = useCreateInvestorProfileMutation();
-  const { data, isLoading } = useUserInfoQuery(undefined);
+
+  const navigate = useNavigate();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -59,31 +59,14 @@ const InvestorProfileForm = () => {
     },
   });
 
-  if (isLoading) {
-    return <p>Loading..</p>;
-  }
-  const userId = data?.data?._id;
-
-  if (!userId) {
-    return <p>Userid</p>;
-  }
-
-  console.log(userId);
-
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    if (!userId) {
-      toast.error('User ID not found. Please log in again.');
-      return;
-    }
-
     const toastId = toast.loading('Submitting investment profile...');
-    const payload = { ...values, userId };
-    console.log(payload);
 
     try {
-      const res = await createInvestorProfile(payload).unwrap();
+      const res = await createInvestorProfile(values).unwrap();
       console.log('Profile created:', res);
       toast.success('Profile created successfully!', { id: toastId });
+      navigate('/', { replace: true });
     } catch (error: any) {
       console.error(error);
 

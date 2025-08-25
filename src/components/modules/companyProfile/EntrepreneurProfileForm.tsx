@@ -2,7 +2,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
-
 import {
   Form,
   FormControl,
@@ -24,10 +23,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Plus, Trash2 } from 'lucide-react';
 import GradientTitle from '@/components/ui/gradientTitle';
-import { useUserInfoQuery } from '@/redux/features/auth/auth.api';
 import { useCreateEntrepreneurProfileMutation } from '@/redux/features/entrepreneur-profile/entrepreneurProfile.api';
 import { toast } from 'sonner';
 import { Link, useNavigate } from 'react-router';
+import { useUserInfoQuery } from '@/redux/features/auth/auth.api';
 
 // ----------------- Zod Schema -----------------
 const formSchema = z.object({
@@ -68,9 +67,9 @@ type EntrepreneurFormValues = z.infer<typeof formSchema>;
 
 // ----------------- Component -----------------
 export default function EntrepreneurProfileForm() {
-  const { data } = useUserInfoQuery(undefined);
   const [createEntrepreneurProfile] = useCreateEntrepreneurProfileMutation();
-  const userId = data?.data?._id;
+  const { data, isLoading } = useUserInfoQuery(undefined);
+
   const navigate = useNavigate();
 
   const form = useForm<EntrepreneurFormValues>({
@@ -121,7 +120,13 @@ export default function EntrepreneurProfileForm() {
     name: 'founders.coFounderNames',
   });
 
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+  const userId = data?.data?._id;
+
   const onSubmit = async (values: EntrepreneurFormValues) => {
+    console.log('VALUES---->', values);
     const payload = {
       userId,
       founders: {
@@ -158,11 +163,14 @@ export default function EntrepreneurProfileForm() {
     };
 
     const toastId = toast.loading('Profile creating...');
+    console.log(payload);
     try {
       const res = await createEntrepreneurProfile(payload).unwrap();
-      toast.success(res.message || 'Profile created.', { id: toastId });
+      console.log('RES--->', res);
+      toast.success(res?.message || 'Profile created.', { id: toastId });
       navigate('/');
     } catch (error: any) {
+      console.log(error);
       toast.error(error?.data?.message || 'Profile creation failed', { id: toastId });
     }
   };

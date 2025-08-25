@@ -15,13 +15,16 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { useUserInfoQuery } from '@/redux/features/auth/auth.api';
+import { useLogoutMutation, useUserInfoQuery } from '@/redux/features/auth/auth.api';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
+import { toast } from 'sonner';
 
 export function NavUser() {
+  const navigate = useNavigate();
   const { isMobile } = useSidebar();
   const { data, isLoading } = useUserInfoQuery(undefined);
+  const [logout] = useLogoutMutation();
   const user = data?.data;
   console.log(user);
 
@@ -31,6 +34,11 @@ export function NavUser() {
   };
 
   const avatarText = getInitials(user?.firstName);
+  const handleLogout = async () => {
+    await logout(undefined);
+    toast.success('Logout');
+    navigate('/login', { replace: true });
+  };
 
   return (
     <SidebarMenu>
@@ -90,7 +98,7 @@ export function NavUser() {
               </DropdownMenuLabel>
 
               <DropdownMenuGroup>
-                <Link to="/company-profile">
+                <Link to="/my-company-profile">
                   <DropdownMenuItem>
                     {user?.role === 'investor' ? (
                       <>
@@ -113,7 +121,7 @@ export function NavUser() {
                 </Link>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogout}>
                 <LogOut />
                 Log out
               </DropdownMenuItem>

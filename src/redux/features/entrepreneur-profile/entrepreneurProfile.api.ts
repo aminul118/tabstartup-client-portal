@@ -5,13 +5,11 @@ const investorProfileApi = baseApi.injectEndpoints({
   // Create profile in investor
   endpoints: (build) => ({
     createEntrepreneurProfile: build.mutation({
-      query: (data) => {
-        return {
-          url: `/entrepreneur-profile/create`,
-          method: 'POST',
-          body: data,
-        };
-      },
+      query: (data) => ({
+        url: `/entrepreneur-profile/create`,
+        method: 'POST',
+        body: data, // plain object -> JSON
+      }),
       invalidatesTags: ['ENTREPRENEUR'],
     }),
 
