@@ -34,7 +34,7 @@ export const authApi = baseApi.injectEndpoints({
     // POST - Send OTP
     sendOtp: builder.mutation({
       query: (otpInfo) => ({
-        url: '/otp/send',
+        url: '/otp/re-send',
         method: 'POST',
         data: otpInfo,
       }),

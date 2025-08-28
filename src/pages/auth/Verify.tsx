@@ -91,7 +91,7 @@ const Verify = () => {
       const res = await verifyOTP({ email: state.email, otp: data.pin }).unwrap();
       if (res.success) {
         toast.success('OTP verified successfully!', { id: toastId });
-        navigate('/login'); // Redirect after success
+        navigate('/'); // Redirect after success
       } else {
         toast.error(res.message || 'OTP verification failed', { id: toastId });
       }
