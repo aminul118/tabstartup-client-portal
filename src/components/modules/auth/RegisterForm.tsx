@@ -90,7 +90,13 @@ const RegisterForm = ({ className, ...props }: React.ComponentProps<'div'>) => {
     try {
       const res: IResponse<IUser> = await register(payload).unwrap();
       toast.success(res.message || `${values.role} created successfully`, { id: toastId });
-      navigate('/login');
+      navigate('/verify', {
+        state: {
+          email: values.email,
+          emailSent: true,
+        },
+        replace: true,
+      });
     } catch (error: any) {
       toast.error(error.message || 'Failed to Register', { id: toastId });
     }

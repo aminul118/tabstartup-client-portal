@@ -13,16 +13,6 @@ const investorProfileApi = baseApi.injectEndpoints({
       invalidatesTags: ['INVESTOR'],
     }),
 
-    // Entrepreneur profile Create
-    createEntrepreneurProfile: build.mutation({
-      query: (payload) => ({
-        url: '/entrepreneur-profile/create',
-        method: 'POST',
-        data: payload,
-      }),
-      invalidatesTags: ['ENTREPRENEUR'],
-    }),
-
     // Get all investor
     getAllInvestorProfile: build.query({
       query: (arg: Record<string, any>) => ({

@@ -10,6 +10,7 @@ const entrepreneurApi = baseApi.injectEndpoints({
         method: 'POST',
         data: payload,
       }),
+      invalidatesTags: ['ENTREPRENEUR'],
     }),
 
     // Get all investor
@@ -19,6 +20,7 @@ const entrepreneurApi = baseApi.injectEndpoints({
         method: 'GET',
         params: arg,
       }),
+      providesTags: ['ENTREPRENEUR'],
     }),
 
     // Get all investor
@@ -28,6 +30,7 @@ const entrepreneurApi = baseApi.injectEndpoints({
         method: 'GET',
         params: arg,
       }),
+      providesTags: ['ENTREPRENEUR'],
     }),
   }),
 });

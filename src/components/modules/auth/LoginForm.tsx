@@ -56,7 +56,13 @@ const LoginForm = ({ className, ...props }: React.ComponentProps<'div'>) => {
       }
     } catch (error: any) {
       if (error?.data?.message === "Error: User isn't verified") {
-        navigate('/verify', { state: values.email });
+        navigate('/verify', {
+          state: {
+            email: values.email,
+            emailSent: false,
+          },
+          replace: true,
+        });
       }
       toast.error(error?.data?.message || 'Something Went Wrong', { id: toastId });
     }

@@ -29,9 +29,12 @@ const FormSchema = z.object({
 });
 
 const Verify = () => {
-  const { state } = useLocation();
+  const { state } = useLocation() as { state: { email: string; emailSent: boolean } };
+
+  console.log(state.email); // The email
+  console.log(state.emailSent); // true
   const navigate = useNavigate();
-  const [otpSent, setOtpSent] = useState(false);
+  const [otpSent, setOtpSent] = useState(state?.emailSent);
   const [timer, setTimer] = useState(0);
   const [sendOTP] = useSendOtpMutation();
   const [verifyOTP] = useVerifyOtpMutation();
@@ -57,10 +60,10 @@ const Verify = () => {
     }
     const toastId = toast.loading('Sending OTP...');
     try {
-      const res = await sendOTP({ email: state }).unwrap();
+      const res = await sendOTP({ email: state.email }).unwrap();
       console.log(res);
       if (res.success) {
-        toast.success(`OTP sent to ${state}`, { id: toastId });
+        toast.success(`OTP sent to ${state.email}`, { id: toastId });
         setOtpSent(true);
         setTimer(60);
       } else {
@@ -85,10 +88,10 @@ const Verify = () => {
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     const toastId = toast.loading('Verifying OTP...');
     try {
-      const res = await verifyOTP({ email: state, otp: data.pin }).unwrap();
+      const res = await verifyOTP({ email: state.email, otp: data.pin }).unwrap();
       if (res.success) {
         toast.success('OTP verified successfully!', { id: toastId });
-        navigate('/'); // Redirect after success
+        navigate('/login'); // Redirect after success
       } else {
         toast.error(res.message || 'OTP verification failed', { id: toastId });
       }
@@ -103,7 +106,7 @@ const Verify = () => {
         <Card className="p-6 text-center min-w-md">
           <CardContent>
             <h1 className="text-xl font-semibold mb-4">Verify your account</h1>
-            <p className="mb-4">Email: {state}</p>
+            <p className="mb-4">Email: {state.email}</p>
             <Button onClick={handleSendOTP}>Send OTP</Button>
           </CardContent>
         </Card>

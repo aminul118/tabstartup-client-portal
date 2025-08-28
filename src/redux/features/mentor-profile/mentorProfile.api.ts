@@ -19,6 +19,7 @@ const mentorProfileApi = baseApi.injectEndpoints({
         method: 'GET',
         params: arg,
       }),
+      providesTags: ['MENTOR'],
     }),
   }),
 });
