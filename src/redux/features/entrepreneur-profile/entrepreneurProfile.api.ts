@@ -1,16 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import baseApi from '@/redux/baseApi';
 
-const investorProfileApi = baseApi.injectEndpoints({
+const entrepreneurApi = baseApi.injectEndpoints({
   // Create profile in investor
   endpoints: (build) => ({
     createEntrepreneurProfile: build.mutation({
-      query: (data) => ({
-        url: `/entrepreneur-profile/create`,
+      query: (payload) => ({
+        url: '/entrepreneur-profile/create',
         method: 'POST',
-        body: data, // plain object -> JSON
+        data: payload,
       }),
-      invalidatesTags: ['ENTREPRENEUR'],
     }),
 
     // Get all investor
@@ -20,10 +19,21 @@ const investorProfileApi = baseApi.injectEndpoints({
         method: 'GET',
         params: arg,
       }),
-      providesTags: ['ENTREPRENEUR'],
+    }),
+
+    // Get all investor
+    getSingleEntrepreneurProfile: build.query({
+      query: (arg: Record<string, any>) => ({
+        url: '/entrepreneur-profile/single-profile',
+        method: 'GET',
+        params: arg,
+      }),
     }),
   }),
 });
 
-export const { useCreateEntrepreneurProfileMutation, useGetAllEntrepreneurProfileQuery } =
-  investorProfileApi;
+export const {
+  useCreateEntrepreneurProfileMutation,
+  useGetAllEntrepreneurProfileQuery,
+  useGetSingleEntrepreneurProfileQuery,
+} = entrepreneurApi;

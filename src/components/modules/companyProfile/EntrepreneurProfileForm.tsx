@@ -23,10 +23,9 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Plus, Trash2 } from 'lucide-react';
 import GradientTitle from '@/components/ui/gradientTitle';
-import { useCreateEntrepreneurProfileMutation } from '@/redux/features/entrepreneur-profile/entrepreneurProfile.api';
 import { toast } from 'sonner';
 import { Link, useNavigate } from 'react-router';
-import { useUserInfoQuery } from '@/redux/features/auth/auth.api';
+import { useCreateEntrepreneurProfileMutation } from '@/redux/features/entrepreneur-profile/entrepreneurProfile.api';
 
 // ----------------- Zod Schema -----------------
 const formSchema = z.object({
@@ -68,7 +67,6 @@ type EntrepreneurFormValues = z.infer<typeof formSchema>;
 // ----------------- Component -----------------
 export default function EntrepreneurProfileForm() {
   const [createEntrepreneurProfile] = useCreateEntrepreneurProfileMutation();
-  const { data, isLoading } = useUserInfoQuery(undefined);
 
   const navigate = useNavigate();
 
@@ -120,15 +118,9 @@ export default function EntrepreneurProfileForm() {
     name: 'founders.coFounderNames',
   });
 
-  if (isLoading) {
-    return <p>Loading...</p>;
-  }
-  const userId = data?.data?._id;
-
   const onSubmit = async (values: EntrepreneurFormValues) => {
     console.log('VALUES---->', values);
     const payload = {
-      userId,
       founders: {
         names: values.founders.names.map((f) => f.value),
         technicalFounder: values.founders.technicalFounder,
@@ -168,7 +160,7 @@ export default function EntrepreneurProfileForm() {
       const res = await createEntrepreneurProfile(payload).unwrap();
       console.log('RES--->', res);
       toast.success(res?.message || 'Profile created.', { id: toastId });
-      navigate('/');
+      navigate('/my-company-profile');
     } catch (error: any) {
       console.log(error);
       toast.error(error?.data?.message || 'Profile creation failed', { id: toastId });

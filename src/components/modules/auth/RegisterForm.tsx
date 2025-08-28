@@ -32,7 +32,7 @@ const formSchema = z
     phone: z.string().min(10, { message: 'Phone number is too short' }),
     password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
     confirmPassword: z.string().min(6, { message: 'Confirm password is required' }),
-    role: z.enum(['investor', 'entrepreneur'], { message: 'Role is required' }),
+    role: z.enum(['investor', 'entrepreneur', 'mentor'], { message: 'Role is required' }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
@@ -234,6 +234,12 @@ const RegisterForm = ({ className, ...props }: React.ComponentProps<'div'>) => {
                               <RadioGroupItem value="entrepreneur" />
                             </FormControl>
                             <FormLabel className="font-normal">Entrepreneur</FormLabel>
+                          </FormItem>
+                          <FormItem className="flex items-center space-x-2">
+                            <FormControl>
+                              <RadioGroupItem value="mentor" />
+                            </FormControl>
+                            <FormLabel className="font-normal">Mentor</FormLabel>
                           </FormItem>
                         </RadioGroup>
                       </FormControl>

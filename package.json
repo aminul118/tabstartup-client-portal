@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "start": "vite preview",
+    "prod": "npm run build && vercel --prod"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",

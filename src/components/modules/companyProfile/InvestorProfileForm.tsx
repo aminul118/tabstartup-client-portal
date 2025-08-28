@@ -66,7 +66,7 @@ const InvestorProfileForm = () => {
       const res = await createInvestorProfile(values).unwrap();
       console.log('Profile created:', res);
       toast.success('Profile created successfully!', { id: toastId });
-      navigate('/', { replace: true });
+      navigate('/my-company-profile', { replace: true });
     } catch (error: any) {
       console.error(error);
 

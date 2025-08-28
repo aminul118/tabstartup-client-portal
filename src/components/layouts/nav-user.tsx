@@ -1,3 +1,5 @@
+'use client';
+
 import { ChevronsUpDown, DollarSign, LogOut, User } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -26,18 +28,31 @@ export function NavUser() {
   const { data, isLoading } = useUserInfoQuery(undefined);
   const [logout] = useLogoutMutation();
   const user = data?.data;
-  console.log(user);
 
-  const getInitials = (name?: string) => {
-    if (!name) return 'U';
-    return name.charAt(0);
+  const getInitials = (first?: string, last?: string) => {
+    if (!first && !last) return 'U';
+    return `${first?.[0] ?? ''}${last?.[0] ?? ''}`.toUpperCase();
   };
 
-  const avatarText = getInitials(user?.firstName);
+  const avatarText = getInitials(user?.firstName, user?.lastName);
+
   const handleLogout = async () => {
     await logout(undefined);
-    toast.success('Logout');
+    toast.success('Logout successful');
     navigate('/login', { replace: true });
+  };
+
+  const getRoleLabel = (role?: string) => {
+    switch (role) {
+      case 'investor':
+        return 'Investor Profile';
+      case 'entrepreneur':
+        return 'Entrepreneur Profile';
+      case 'mentor':
+        return 'Mentor Profile';
+      default:
+        return 'Profile';
+    }
   };
 
   return (
@@ -50,7 +65,6 @@ export function NavUser() {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               {isLoading ? (
-                // Skeleton UI while loading
                 <div className="flex items-center gap-3 w-full">
                   <Skeleton className="h-8 w-8 rounded-lg" />
                   <div className="grid flex-1 gap-1">
@@ -79,7 +93,8 @@ export function NavUser() {
 
           {!isLoading && (
             <DropdownMenuContent
-              className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+              style={{ minWidth: 'var(--radix-dropdown-menu-trigger-width)' }}
+              className="rounded-lg"
               side={isMobile ? 'bottom' : 'right'}
               align="end"
               sideOffset={4}
@@ -91,7 +106,9 @@ export function NavUser() {
                     <AvatarFallback className="rounded-lg">{avatarText}</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-medium">{user?.name}</span>
+                    <span className="truncate font-medium">
+                      {user?.firstName} {user?.lastName}
+                    </span>
                     <span className="truncate text-xs">{user?.email}</span>
                   </div>
                 </div>
@@ -100,17 +117,8 @@ export function NavUser() {
               <DropdownMenuGroup>
                 <Link to="/my-company-profile">
                   <DropdownMenuItem>
-                    {user?.role === 'investor' ? (
-                      <>
-                        <DollarSign />
-                        Investor Profile
-                      </>
-                    ) : (
-                      <>
-                        <DollarSign />
-                        Entrepreneur Profile
-                      </>
-                    )}
+                    <DollarSign />
+                    {getRoleLabel(user?.role)}
                   </DropdownMenuItem>
                 </Link>
                 <Link to="/profile">
@@ -120,7 +128,9 @@ export function NavUser() {
                   </DropdownMenuItem>
                 </Link>
               </DropdownMenuGroup>
+
               <DropdownMenuSeparator />
+
               <DropdownMenuItem onClick={handleLogout}>
                 <LogOut />
                 Log out

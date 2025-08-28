@@ -1,5 +1,11 @@
+import ComingSoon from '@/components/modules/common/ComingSoon';
+
 const Projects = () => {
-  return <div></div>;
+  return (
+    <div>
+      <ComingSoon />
+    </div>
+  );
 };
 
 export default Projects;

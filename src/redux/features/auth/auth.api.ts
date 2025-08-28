@@ -19,7 +19,7 @@ export const authApi = baseApi.injectEndpoints({
         method: 'POST',
         data: authInfo,
       }),
-      invalidatesTags: ['USER'],
+      invalidatesTags: ['USER', 'ENTREPRENEUR', 'INVESTOR', 'MENTOR'],
     }),
 
     // POST - Logout
@@ -38,7 +38,7 @@ export const authApi = baseApi.injectEndpoints({
         method: 'POST',
         data: otpInfo,
       }),
-      invalidatesTags: ['USER'],
+      invalidatesTags: ['USER', 'ENTREPRENEUR', 'INVESTOR', 'MENTOR'],
     }),
 
     // POST - Verify  OTP
@@ -48,7 +48,7 @@ export const authApi = baseApi.injectEndpoints({
         method: 'POST',
         data: otpInfo,
       }),
-      invalidatesTags: ['USER'],
+      invalidatesTags: ['USER', 'ENTREPRENEUR', 'INVESTOR', 'MENTOR'],
     }),
 
     // Get logged user info
