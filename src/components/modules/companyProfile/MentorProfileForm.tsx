@@ -30,13 +30,13 @@ const mentorSchema = z.object({
   name: z.string().min(2),
   email: z.string().email(),
   phone: z.string().optional(),
-  profilePicture: z.string().url().optional(),
+  profilePicture: z.string().optional(),
   location: z.string().optional(),
 
   socialLinks: z.object({
-    linkedIn: z.string().url().optional(),
-    website: z.string().url().optional(),
-    twitter: z.string().url().optional(),
+    linkedIn: z.string().optional(),
+    website: z.string().optional(),
+    twitter: z.string().optional(),
   }),
 
   organization: z.string().optional(),

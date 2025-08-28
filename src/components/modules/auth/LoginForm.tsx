@@ -55,7 +55,7 @@ const LoginForm = ({ className, ...props }: React.ComponentProps<'div'>) => {
         navigate(from, { replace: true });
       }
     } catch (error: any) {
-      if (error?.data?.message === "Error: User isn't verified") {
+      if (error?.data?.err?.statusCode === 912) {
         navigate('/verify', {
           state: {
             email: values.email,

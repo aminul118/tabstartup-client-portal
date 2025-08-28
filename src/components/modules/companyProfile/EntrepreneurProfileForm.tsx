@@ -30,7 +30,9 @@ import { useCreateEntrepreneurProfileMutation } from '@/redux/features/entrepren
 // ----------------- Zod Schema -----------------
 const formSchema = z.object({
   founders: z.object({
-    names: z.array(z.object({ value: z.string().min(2, 'Name must be at least 2 characters') })),
+    names: z
+      .array(z.object({ value: z.string().min(2, 'Name must be at least 2 characters') }))
+      .nonempty('At least one founder is required'),
     technicalFounder: z.string().min(2, 'Required'),
     coFounders: z.boolean(),
     coFounderNames: z
@@ -38,26 +40,26 @@ const formSchema = z.object({
       .optional(),
   }),
   company: z.object({
-    name: z.string().min(2),
-    shortDescription: z.string().min(5),
-    linkedIn: z.string().url().optional().or(z.literal('')),
-    twitter: z.string().url().optional().or(z.literal('')),
-    website: z.string().url().optional().or(z.literal('')),
-    product: z.string().min(2),
-    location: z.string().min(2),
+    name: z.string().min(2, 'Company name is required'),
+    shortDescription: z.string().min(5, 'Description must be at least 5 characters'),
+    linkedIn: z.string().optional(),
+    twitter: z.string().optional(),
+    website: z.string().optional(),
+    product: z.string().min(2, 'Product is required'),
+    location: z.string().min(2, 'Location is required'),
   }),
   stage: z.enum(['idea', 'prototype', 'launched', 'scaling']),
-  industry: z.string().min(2),
+  industry: z.string().min(2, 'Industry is required'),
   funding: z.object({
-    amountSeeking: z.number().nonnegative(),
-    currency: z.string().min(1),
-    equityOffered: z.number().min(0).max(100),
+    amountSeeking: z.number().nonnegative('Must be 0 or positive'),
+    currency: z.string().min(1, 'Currency is required'),
+    equityOffered: z.number().min(0).max(100, 'Must be between 0 and 100'),
   }),
   traction: z
     .object({
-      usersCount: z.number(),
-      revenue: z.number(),
-      growthRate: z.string(),
+      usersCount: z.number().optional(),
+      revenue: z.number().optional(),
+      growthRate: z.string().optional(),
     })
     .optional(),
 });
@@ -67,7 +69,6 @@ type EntrepreneurFormValues = z.infer<typeof formSchema>;
 // ----------------- Component -----------------
 export default function EntrepreneurProfileForm() {
   const [createEntrepreneurProfile] = useCreateEntrepreneurProfileMutation();
-
   const navigate = useNavigate();
 
   const form = useForm<EntrepreneurFormValues>({
@@ -77,16 +78,16 @@ export default function EntrepreneurProfileForm() {
         names: [{ value: '' }],
         technicalFounder: '',
         coFounders: false,
-        coFounderNames: [{ value: '' }],
+        coFounderNames: [],
       },
       company: {
         name: '',
         shortDescription: '',
         product: '',
         location: '',
-        linkedIn: '',
-        twitter: '',
-        website: '',
+        linkedIn: undefined,
+        twitter: undefined,
+        website: undefined,
       },
       stage: 'idea',
       industry: '',
@@ -95,11 +96,7 @@ export default function EntrepreneurProfileForm() {
         currency: 'USD',
         equityOffered: 0,
       },
-      traction: {
-        usersCount: 0,
-        revenue: 0,
-        growthRate: '',
-      },
+      traction: undefined, // ✅ don’t send empty traction
     },
   });
 
@@ -118,8 +115,10 @@ export default function EntrepreneurProfileForm() {
     name: 'founders.coFounderNames',
   });
 
+  const cleanString = (val?: string) => (val && val.trim() !== '' ? val : undefined);
+
+  // ----------------- Submit Handler -----------------
   const onSubmit = async (values: EntrepreneurFormValues) => {
-    console.log('VALUES---->', values);
     const payload = {
       founders: {
         names: values.founders.names.map((f) => f.value),
@@ -127,14 +126,14 @@ export default function EntrepreneurProfileForm() {
         coFounders: values.founders.coFounders,
         coFounderNames: values.founders.coFounders
           ? values.founders.coFounderNames?.map((f) => f.value) || []
-          : [],
+          : undefined,
       },
       company: {
         name: values.company.name,
         shortDescription: values.company.shortDescription,
-        linkedIn: values.company.linkedIn || '',
-        twitter: values.company.twitter || '',
-        website: values.company.website || '',
+        linkedIn: cleanString(values.company.linkedIn),
+        twitter: cleanString(values.company.twitter),
+        website: cleanString(values.company.website),
         product: values.company.product,
         location: values.company.location,
       },
@@ -149,20 +148,17 @@ export default function EntrepreneurProfileForm() {
         ? {
             usersCount: values.traction.usersCount,
             revenue: values.traction.revenue,
-            growthRate: values.traction.growthRate,
+            growthRate: cleanString(values.traction.growthRate),
           }
         : undefined,
     };
 
     const toastId = toast.loading('Profile creating...');
-    console.log(payload);
     try {
       const res = await createEntrepreneurProfile(payload).unwrap();
-      console.log('RES--->', res);
       toast.success(res?.message || 'Profile created.', { id: toastId });
       navigate('/my-company-profile');
     } catch (error: any) {
-      console.log(error);
       toast.error(error?.data?.message || 'Profile creation failed', { id: toastId });
     }
   };
@@ -189,7 +185,7 @@ export default function EntrepreneurProfileForm() {
                   <div key={field.id} className="flex items-center gap-2">
                     <FormField
                       control={form.control}
-                      name={`founders.names.${index}.value` as const}
+                      name={`founders.names.${index}.value`}
                       render={({ field }) => (
                         <FormItem className="flex-1">
                           <FormControl>
@@ -245,7 +241,7 @@ export default function EntrepreneurProfileForm() {
                     <div key={field.id} className="flex items-center gap-2">
                       <FormField
                         control={form.control}
-                        name={`founders.coFounderNames.${index}.value` as const}
+                        name={`founders.coFounderNames.${index}.value`}
                         render={({ field }) => (
                           <FormItem className="flex-1">
                             <FormControl>
